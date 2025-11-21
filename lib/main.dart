@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
       ),
-      home: const TodoApp(),
+      home: const WelcomeScreen(),
       debugShowCheckedModeBanner: false,
     );
   }
@@ -514,4 +514,27 @@ class TodoItem {
   String title;
   bool isCompleted;
   TodoItem({required this.title, required this.isCompleted});
+}
+// Navigation Learning 
+// ============================================
+// 1. WELCOME SCREEN (Landing Page)
+// ============================================
+class WelcomeScreen extends StatelessWidget {
+  const WelcomeScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body:Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end:Alignment.bottomCenter,
+            colors:[Colors.deepPurple,Colors.purpleAccent]
+          )
+        ),
+      ),
+
+    );
+  }
 }
