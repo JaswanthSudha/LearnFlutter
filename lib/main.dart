@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
       ),
-      home: const CounterPage(),
+      home: const TodoApp(),
       debugShowCheckedModeBanner: false,
     );
   }
@@ -276,7 +276,7 @@ class _CounterPageState extends State<CounterPage> {
                     heroTag: "increment",
                     child: Icon(Icons.refresh),
                   ),
-                    // Increment Button
+                  // Increment Button
                   FloatingActionButton(
                     onPressed: _incrementCounter,
                     backgroundColor: Colors.green,
@@ -320,4 +320,198 @@ class _CounterPageState extends State<CounterPage> {
       ),
     );
   }
+}
+
+class TodoApp extends StatefulWidget {
+  const TodoApp({super.key});
+
+  @override
+  State<TodoApp> createState() => _TodoAppState();
+}
+
+class _TodoAppState extends State<TodoApp> {
+  final TextEditingController _todoController = TextEditingController();
+  final List<TodoItem> _todoList = [];
+  void _addTodo() {
+    if (_todoController.text.isNotEmpty) {
+      setState(() {
+        _todoList.add(
+          TodoItem(title: _todoController.text, isCompleted: false),
+        );
+        _todoController.clear();
+      });
+    }
+  }
+
+  void _deleteTodo(int index) {
+    setState(() {
+      _todoList.removeAt(index);
+    });
+  }
+
+  void _toggleTodo(int index) {
+    setState(() {
+      _todoList[index].isCompleted = !_todoList[index].isCompleted;
+    });
+  }
+
+  void _clearCompleted() {
+    setState(() {
+      _todoList.removeWhere((todo) => todo.isCompleted);
+    });
+  }
+
+  @override
+  void dispose() {
+    _todoController.dispose();
+    super.dispose();
+  }
+
+  Widget _buildStatCard(String label, int count, Color color) {
+    return Column(
+      children: [
+        Text(
+          "$count",
+          style: TextStyle(
+            fontSize: 28,
+            fontWeight: FontWeight.bold,
+            color: color,
+          ),
+        ),
+        Text(label, style: const TextStyle(fontSize: 14, color: Colors.grey)),
+      ],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    //calculate statistics
+    int totalTasks = _todoList.length;
+    int completedTasks = _todoList.where((todo) => todo.isCompleted).length;
+    int pendingTasks = totalTasks - completedTasks;
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("My todo list"),
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        actions: [
+          //clear completed
+          IconButton(
+            onPressed: _clearCompleted,
+            icon: const Icon(Icons.clear_all),
+            tooltip: "Clear Completed",
+          ),
+        ],
+      ),
+      body: Column(
+        children: [
+          //Statistics Section
+          Container(
+            padding: const EdgeInsets.all(16),
+            color: Colors.deepPurple[50],
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                _buildStatCard("Total", totalTasks, Colors.blue),
+                _buildStatCard("Pending", pendingTasks, Colors.orange),
+                _buildStatCard("Completed", completedTasks, Colors.green),
+              ],
+            ),
+          ),
+          //Input Section
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _todoController,
+                    decoration: InputDecoration(
+                      hintText: "Enter a new task...",
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      prefixIcon: const Icon(Icons.task_alt),
+                    ),
+                    onSubmitted: (value) => _addTodo(),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                FloatingActionButton(
+                  onPressed: _addTodo,
+                  child: const Icon(Icons.add),
+                ),
+              ],
+            ),
+          ),
+          const Divider(height: 1),
+          Expanded(
+            child: _todoList.isEmpty
+                ? Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.inbox, size: 100, color: Colors.grey[300]),
+                        const SizedBox(height: 16),
+                        Text(
+                          "NO Tasks yet!",
+                          style: TextStyle(
+                            fontSize: 20,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          "Add a task to get started",
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey[400],
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                :ListView.builder(
+                    itemCount: _todoList.length,
+                    itemBuilder: (context, index) {
+                      final todo = _todoList[index];
+                      return Card(
+                        margin: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 4,
+                        ),
+                        child: ListTile(
+                          leading: Checkbox(
+                            value: todo.isCompleted,
+                            onChanged: (value) => _toggleTodo(index),
+                          ),
+                          title: Text(
+                            todo.title,
+                            style: TextStyle(
+                              decoration: todo.isCompleted
+                                  ? TextDecoration.lineThrough
+                                  : TextDecoration.none,
+                              color: todo.isCompleted
+                                  ? Colors.grey
+                                  : Colors.black,
+                            ),
+                          ),
+                          trailing: IconButton(
+                            icon: const Icon(Icons.delete, color: Colors.red),
+                            onPressed: () => _deleteTodo(index),
+                          ),
+                                ),
+                      );
+                    },
+                  ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class TodoItem {
+  String title;
+  bool isCompleted;
+  TodoItem({required this.title, required this.isCompleted});
 }
