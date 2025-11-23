@@ -1,8 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/registration_screen.dart';
+import 'package:provider/provider.dart';
+import 'providers/counter_provider.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => CounterProvider(),
+      child: const MyApp(),
+    ),
+  );
 }
 
 //My App is statless widget because its properties do not change over time
@@ -18,12 +25,85 @@ class MyApp extends StatelessWidget {
       ),
       debugShowCheckedModeBanner: false,
       routes: {
-        "/": (context) => const WelcomeScreen(),
+        "/": (context) => const CounterScreenProvider(),
         "/login": (context) => const LoginScreen(),
         "/home": (context) => const HomeScreen(),
         "/profile": (context) => const ProfileScreen(),
         "/register": (context) => const RegistrationScreen(),
       },
+    );
+  }
+}
+
+class CounterScreenProvider extends StatelessWidget {
+  const CounterScreenProvider({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final count = context.watch<CounterProvider>().count;
+    return Scaffold(
+      appBar: AppBar(title: const Text("Counter Provider")),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              height: 160,
+              width: 160,
+              decoration: BoxDecoration(
+                color: count % 2 == 0 ? Colors.indigo : Colors.deepPurple,
+                borderRadius: BorderRadius.circular(24),
+              ),
+              alignment: Alignment.center,
+              child: Text(
+                '$count',
+                style: TextStyle(
+                  fontSize: 54,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+            const SizedBox(height: 40),
+            // Consumer<CounterProvider>(
+            //   builder: (context, provider, child) {
+            //     return Text(
+            //       "Parity: ${provider.count % 2 == 0 ? 'Even' : 'Odd'}",
+            //       style: const TextStyle(fontSize: 18),
+            //     );
+            //   },
+            // ),
+            Text(
+              "Parity: ${count % 2 == 0 ? 'Even' : 'Odd'}",
+              style: TextStyle(fontSize: 18),
+            ),
+            const SizedBox(height: 24),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                FloatingActionButton(
+                  heroTag: "decrement",
+                  onPressed: () => context
+                      .read<CounterProvider>()
+                      .decrement(), // read: no rebuild
+                  child: const Icon(Icons.remove),
+                ),
+                FloatingActionButton(
+                  heroTag: "reset",
+                  onPressed: () => context.read<CounterProvider>().reset(),
+                  child: const Icon(Icons.refresh),
+                ),
+                FloatingActionButton(
+                  heroTag: "increment",
+                  onPressed: () => context.read<CounterProvider>().increment(),
+                  child: const Icon(Icons.add),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
