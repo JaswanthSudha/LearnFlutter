@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/registration_screen.dart';
 import 'package:provider/provider.dart';
 import 'providers/counter_provider.dart';
+import 'screens/todo_screen.dart';
 
 void main() {
   runApp(
@@ -25,7 +26,7 @@ class MyApp extends StatelessWidget {
       ),
       debugShowCheckedModeBanner: false,
       routes: {
-        "/": (context) => const CounterScreenProvider(),
+        "/": (context) => const TodoProviderScreen(),
         "/login": (context) => const LoginScreen(),
         "/home": (context) => const HomeScreen(),
         "/profile": (context) => const ProfileScreen(),
