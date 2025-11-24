@@ -3,13 +3,14 @@ import 'package:flutter_application_1/registration_screen.dart';
 import 'package:provider/provider.dart';
 import 'providers/counter_provider.dart';
 import 'screens/todo_screen.dart';
-
+import 'providers/todo_provider.dart';
 void main() {
   runApp(
-    ChangeNotifierProvider(
-      create: (_) => CounterProvider(),
-      child: const MyApp(),
-    ),
+    MultiProvider(providers: [
+      ChangeNotifierProvider(create: (_)=>CounterProvider()),
+      ChangeNotifierProvider(create: (_)=>TodoProvider())
+    ],child: MyApp(),)
+    
   );
 }
 
