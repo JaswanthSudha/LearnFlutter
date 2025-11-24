@@ -27,11 +27,13 @@ class MyApp extends StatelessWidget {
       ),
       debugShowCheckedModeBanner: false,
       routes: {
-        "/": (context) => const TodoProviderScreen(),
+        "/": (context) => const WelcomeScreen(),
         "/login": (context) => const LoginScreen(),
         "/home": (context) => const HomeScreen(),
         "/profile": (context) => const ProfileScreen(),
         "/register": (context) => const RegistrationScreen(),
+        '/counter':(context) => const CounterScreenProvider(),
+        '/todo':(context) => const TodoProviderScreen(),
       },
     );
   }

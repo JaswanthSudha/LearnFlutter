@@ -14,8 +14,9 @@ class _TodoProviderScreenState extends State<TodoProviderScreen> {
   @override
   void dispose() {
     // TODO: implement dispose
-    super.dispose();
     _controller.dispose();
+    super.dispose();
+
   }
 
   Widget _buildStatChip(String label, int count, Color color) {
@@ -50,7 +51,14 @@ class _TodoProviderScreenState extends State<TodoProviderScreen> {
                 Expanded(
                   child: TextField(
                     controller: _controller,
-                    onSubmitted: (_) => print("hello"),
+                    onSubmitted: (_){
+                      todoProvider.addTodo(_controller.text);
+                      _controller.clear();
+                      //i want to display a snackbar here saying todo is added 
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Todo added')),
+                      );
+                    },
                     decoration: InputDecoration(
                       hintText: "Enter a task",
                       border: OutlineInputBorder(),
